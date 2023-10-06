@@ -28,16 +28,18 @@ def printPointcloudList(fullCloudArray):
     geom.points = o3d.utility.Vector3dVector(fullCloudArray[0][["x", "y", "z"]].values)
     # o3d.visualization.draw_geometries([geom])
 
+    #R = geom.get_rotation_matrix_from_xyz((np.pi / 2, 0, np.pi / 4))
+    #geom.rotate(R, center=(0, 0, 0))
     vis.add_geometry(geom)
+    mesh_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.6, origin=[0, 0, 0])
+    # red = x
+    # green = y
+    # blue = z
 
     vis.get_view_control().set_front([-0.5, 0.4, 0])
     vis.get_view_control().set_up([0, 0, 1])
     vis.get_view_control().set_zoom(0.5)
     depthColours = False
-    mesh_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.6, origin=[0, 0, 0])
-    # red = x
-    # green = y
-    # blue = z
 
     vis.add_geometry(mesh_frame)
 
@@ -56,11 +58,18 @@ def printPointcloudList(fullCloudArray):
 
         # set point values
         geom.points = o3d.utility.Vector3dVector(item[["x", "y", "z"]].values)
+
+        degree = 20
+        rotMat = [[np.cos(np.radians(degree)), -1 * np.sin(np.radians(degree)), 0],
+                  [np.sin(np.radians(degree)), np.cos(np.radians(degree)), 0],
+                  [0, 0, 1]]
+        geom.rotate(rotMat, center=(0, 0, 0))
+
         # updated geometry and re render
         vis.update_geometry(geom)
         vis.poll_events()
         vis.update_renderer()
-        time.sleep(0.1)
+        time.sleep(0.05)
         # input("click to continue")
 
 
@@ -120,12 +129,12 @@ print("number of frames = ", i + 1 * 3)
 
 #saveAsImages(fullCloudArray[0:1], 400, 200)
 #printPointcloudList(fullCloudArray)
-degree = 360
-for j in range(len(fullCloudArray)):
 
-    fullCloudArray[j]['x'] = fullCloudArray[j].apply(lambda row: rotationForX(row['x'], row['y']), axis=1)
-    fullCloudArray[j]['y'] = fullCloudArray[j].apply(lambda row: rotationForY(row['x'], row['y']), axis=1)
-    print(j)
+#for j in range(len(fullCloudArray)):#
+#
+#    fullCloudArray[j]['x'] = fullCloudArray[j].apply(lambda row: rotationForX(row['x'], row['y']), axis=1)
+#    fullCloudArray[j]['y'] = fullCloudArray[j].apply(lambda row: rotationForY(row['x'], row['y']), axis=1)
+#    print(j)
 
 printPointcloudList(fullCloudArray)
 
